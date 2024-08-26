@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Dto.Comment;
-using api.dtos.comment;
 using api.Interface;
 using api.mappers;
-using api.Repository;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.controllers
@@ -27,12 +24,13 @@ namespace api.controllers
         [HttpGet]
         public async Task<ActionResult> GetAll()
         {
+
             var comment = await _commentRepo.GetAll();
             var cmt = comment.Select(m => m.ToCommentDto());
             return Ok(cmt);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult> GetById(int id)
         {
             var comment = await _commentRepo.GetById(id);
@@ -44,10 +42,13 @@ namespace api.controllers
             return Ok(comment.ToCommentDto());
         }
 
-        [HttpPost("{id}")]
+        [HttpPost("{id:int}")]
         public async Task<ActionResult> Create([FromRoute] int id, CreateCommentDto commentDto)
         {
-
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             if (!await _stockRepo.StockExist(id))
             {
                 return BadRequest("Stock does not exist!!!");
@@ -59,9 +60,13 @@ namespace api.controllers
         }
 
         [HttpPut]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<ActionResult> Update([FromRoute] int id, [FromBody] UpdateCommentDto UpdateDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             var comment = await _commentRepo.Update(id, UpdateDto);
 
