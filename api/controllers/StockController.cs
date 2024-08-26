@@ -45,14 +45,6 @@ namespace api.controllers
             return Ok(stock.ToStockDto());
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateStockDto createDto)
-        {
-            var stock = createDto.ToStockFromCreateDto();
-            await _stockRepo.Create(stock);
-            return CreatedAtAction(nameof(GetById), new { id = stock.Id }, stock.ToStockDto());
-        }
-
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockDto updateDto)
@@ -66,6 +58,15 @@ namespace api.controllers
 
             return Ok(stock.ToStockDto());
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateStockDto createDto)
+        {
+            var stock = createDto.ToStockFromCreateDto();
+            await _stockRepo.Create(stock);
+            return CreatedAtAction(nameof(GetById), new { id = stock.Id }, stock.ToStockDto());
+        }
+
 
         [HttpDelete]
         [Route("{id}")]
