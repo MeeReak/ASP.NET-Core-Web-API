@@ -14,5 +14,6 @@ namespace api.Interface
         Task<Stock> Create(Stock stockModel);
         Task<Stock?> Update(int id, UpdateStockDto stockModel);
         Task<Stock?> Delete(int id);
+        Task<bool> StockExist(int id);
     }
 }
