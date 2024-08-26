@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using api.data;
 using api.dtos.stock;
 using api.mappers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using api.Interface;
 
 namespace api.controllers
@@ -32,7 +29,7 @@ namespace api.controllers
             return Ok(stk);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var stock = await _stockRepo.GetById(id);
@@ -46,9 +43,13 @@ namespace api.controllers
         }
 
         [HttpPut]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockDto updateDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var stock = await _stockRepo.Update(id, updateDto);
 
             if (stock == null)
@@ -62,6 +63,10 @@ namespace api.controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateStockDto createDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var stock = createDto.ToStockFromCreateDto();
             await _stockRepo.Create(stock);
             return CreatedAtAction(nameof(GetById), new { id = stock.Id }, stock.ToStockDto());
@@ -69,7 +74,7 @@ namespace api.controllers
 
 
         [HttpDelete]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var stock = await _stockRepo.Delete(id);
