@@ -6,6 +6,7 @@ using api.dtos.stock;
 using api.mappers;
 using Microsoft.AspNetCore.Mvc;
 using api.Interface;
+using api.utils;
 
 namespace api.controllers
 {
@@ -21,11 +22,17 @@ namespace api.controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
-            var stock = await _stockRepo.GetAll();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var stock = await _stockRepo.GetAll(query);
 
             var stk = stock.Select(m => m.ToStockDto());
+
             return Ok(stk);
         }
 
