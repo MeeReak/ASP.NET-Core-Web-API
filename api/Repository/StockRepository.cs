@@ -55,7 +55,17 @@ namespace api.Repository
                 stock = stock.Where(x => x.Symbol.Contains(query.Symbol));
             }
 
-            return await stock.ToListAsync();
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                if (query.SortBy.Equals("Symbol", StringComparison.OrdinalIgnoreCase))
+                {
+                    stock = query.IsDescending ? stock.OrderByDescending(x => x.Symbol) : stock.OrderBy(x => x.Symbol);
+                }
+            }
+
+            var Skip = (query.Number - 1) * query.Limit;
+
+            return await stock.Skip(Skip).Take(query.Limit).ToListAsync();
         }
 
         public async Task<Stock?> GetById(int id)
